@@ -1,0 +1,47 @@
+"_id","_labels","fernbahn_gleise","name","rollstuhl","s_bahn_gleise","u_bahn_gleise","überdacht","_start","_end","_type","distanz","fahrzeit"
+"0",":Station","9","Köln Hauptbahnhof","yes","2","","true",,,,,
+"1",":Station","8","Hamburg Hauptbahnhof","yes","4","","true",,,,,
+"2",":Station","10","Hannover Hauptbahnhof","yes","2","","true",,,,,
+"3",":Station","2","Berlin-Westkreuz","yes","4","","true",,,,,
+"4",":Station","8","Hamburg Altona","limited","4","","true",,,,,
+"5",":Station","6","Gesundbrunnen","yes","4","","true",,,,,
+"6",":Station","32","München Hauptbahnhof","yes","2","","true",,,,,
+"7",":Station","18","Nürnberg Hauptbahnhof","yes","4","","true",,,,,
+"8",":Station","4","Berlin-Spandau","yes","2","","no",,,,,
+"9",":Station","6","Berlin-Südkreuz","yes","4","","true",,,,,
+"10",":Station","4","Potsdam Hauptbahnhof","yes","2","","true",,,,,
+"11",":Station","12","Berlin Hauptbahnhof","yes","4","2","true",,,,,
+"12",":Station","","Neukölln","no","2","","limited",,,,,
+"13",":Station","6","Ostkreuz","yes","6","","true",,,,,
+"14",":Station","4","Friedrichsstraße","yes","4","2","true",,,,,
+,,,,,,,,"8","3","SBAHN","10","15"
+,,,,,,,,"9","11","SBAHN","8","12"
+,,,,,,,,"0","1","FERNBAHN","357","178"
+,,,,,,,,"0","2","FERNBAHN","249","124"
+,,,,,,,,"0","7","FERNBAHN","337","168"
+,,,,,,,,"7","9","FERNBAHN","438","219"
+,,,,,,,,"2","8","FERNBAHN","235","117"
+,,,,,,,,"8","11","FERNBAHN","13","6"
+,,,,,,,,"3","11","SBAHN","4","6"
+,,,,,,,,"1","2","FERNBAHN","151","75"
+,,,,,,,,"9","11","FERNBAHN","8","4"
+,,,,,,,,"10","3","SBAHN","30","47"
+,,,,,,,,"4","1","SBAHN","6","9"
+,,,,,,,,"4","1","FERNBAHN","6","3"
+,,,,,,,,"5","14","SBAHN","5","7"
+,,,,,,,,"12","9","SBAHN","4","6"
+,,,,,,,,"8","12","UBAHN","20","40"
+,,,,,,,,"1","8","FERNBAHN","278","139"
+,,,,,,,,"6","7","FERNBAHN","173","86"
+,,,,,,,,"7","2","FERNBAHN","472","236"
+,,,,,,,,"10","11","FERNBAHN","34","17"
+,,,,,,,,"9","3","SBAHN","10","15"
+,,,,,,,,"14","13","SBAHN","5","7"
+,,,,,,,,"14","13","FERNBAHN","5","2"
+,,,,,,,,"14","11","FERNBAHN","2","1"
+,,,,,,,,"14","11","SBAHN","2","3"
+,,,,,,,,"9","14","SBAHN","7","11"
+,,,,,,,,"9","14","FERNBAHN","7","3"
+,,,,,,,,"5","13","SBAHN","7","11"
+,,,,,,,,"12","13","SBAHN","4","6"
+,,,,,,,,"3","5","SBAHN","7","11"
