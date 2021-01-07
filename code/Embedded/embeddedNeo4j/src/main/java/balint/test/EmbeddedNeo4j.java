@@ -1,4 +1,4 @@
-package embeddedNeo4j;
+package balint.test;
 
 /*
  * Licensed to Neo4j under one or more contributor
@@ -20,9 +20,11 @@ package embeddedNeo4j;
  */
 
 
-import java.io.IOException; 
+import java.io.IOException;   
 import java.nio.file.Path;
 
+import org.neo4j.configuration.connectors.BoltConnector;
+import org.neo4j.configuration.helpers.SocketAddress;
 import org.neo4j.dbms.api.DatabaseManagementService;
 import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
 import org.neo4j.graphdb.Direction;
@@ -30,12 +32,13 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
+import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.io.fs.FileUtils;
+import java.util.Scanner;
 
-//brauchen wir aus irgendeinem grund
 import static org.neo4j.configuration.GraphDatabaseSettings.DEFAULT_DATABASE_NAME;
-
+ 
 public class EmbeddedNeo4j
 {
     private static final Path databaseDirectory = Path.of( "target/neo4j-hello-db" );
@@ -61,6 +64,15 @@ public class EmbeddedNeo4j
     {
         EmbeddedNeo4j hello = new EmbeddedNeo4j();
         hello.createDb();
+        while(true) {
+        	Scanner scanner = new Scanner(System.in);
+        	System.out.println("Shut down database Y/n?");
+        	String s = scanner.nextLine();
+        	if (s.equals("Y")) {
+        		scanner.close();
+        		break;
+        		}
+        	}
         hello.removeData();
         hello.shutDown();
     }
@@ -70,9 +82,10 @@ public class EmbeddedNeo4j
         FileUtils.deleteDirectory( databaseDirectory );
 
         // tag::startDb[]
-
-        // diese 3 zeilen starten einen embedded neo4j server
-        managementService = new DatabaseManagementServiceBuilder( databaseDirectory ).build();
+        managementService = new DatabaseManagementServiceBuilder( databaseDirectory )
+        		.setConfig( BoltConnector.enabled, true )
+                .setConfig( BoltConnector.listen_address, new SocketAddress( "localhost", 7687 ) )
+                .build();
         graphDb = managementService.database( DEFAULT_DATABASE_NAME );
         registerShutdownHook( managementService );
         // end::startDb[]
@@ -80,6 +93,8 @@ public class EmbeddedNeo4j
         // tag::transaction[]
         try ( Transaction tx = graphDb.beginTx() )
         {
+        	
+        	//Result result = tx.execute( "LOAD CSV WITH HEADERS FROM \"file:////Users/My_User/csv_file.csv\" AS csvLine\n" );
             // Database operations go here
             // end::transaction[]
             // tag::addData[]
@@ -93,9 +108,9 @@ public class EmbeddedNeo4j
             // end::addData[]
 
             // tag::readData[]
-            System.out.print( firstNode.getProperty( "message" ) );
-            System.out.print( relationship.getProperty( "message" ) );
-            System.out.print( secondNode.getProperty( "message" ) );
+//            System.out.print( firstNode.getProperty( "message" ) );
+//            System.out.print( relationship.getProperty( "message" ) );
+//            System.out.print( secondNode.getProperty( "message" ) );
             // end::readData[]
 
             greeting = ( (String) firstNode.getProperty( "message" ) )
