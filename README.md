@@ -8,7 +8,7 @@ How to turn .graphml file into cypher script:
   - click on three dots in top right corner and select manage
   - Go on plugisn and download APOC
   - Click on settings and add following lines
-        apoc.import.file.enabled=true*
+        apoc.import.file.enabled=true
         apoc.export.file.enabled=true
   - Restart DB if neccessary/if asked
   - Run following procedure to load .graphml file into db
