@@ -20,9 +20,12 @@ package embeddedNeo4j;
  */
 
 
-import java.io.IOException; 
+import java.io.IOException;
 import java.nio.file.Path;
 
+import org.neo4j.configuration.connectors.BoltConnector;
+import org.neo4j.configuration.connectors.HttpConnector;
+import org.neo4j.configuration.helpers.SocketAddress;
 import org.neo4j.dbms.api.DatabaseManagementService;
 import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
 import org.neo4j.graphdb.Direction;
@@ -61,8 +64,8 @@ public class EmbeddedNeo4j
     {
         EmbeddedNeo4j hello = new EmbeddedNeo4j();
         hello.createDb();
-        hello.removeData();
-        hello.shutDown();
+        //hello.removeData();
+        //hello.shutDown();
     }
 
     void createDb() throws IOException
@@ -72,7 +75,10 @@ public class EmbeddedNeo4j
         // tag::startDb[]
 
         // diese 3 zeilen starten einen embedded neo4j server
-        managementService = new DatabaseManagementServiceBuilder( databaseDirectory ).build();
+        managementService = new DatabaseManagementServiceBuilder( databaseDirectory )
+                .setConfig( BoltConnector.enabled, true )
+                .setConfig( BoltConnector.listen_address, new SocketAddress( "localhost", 7687 ) )
+                .build();
         graphDb = managementService.database( DEFAULT_DATABASE_NAME );
         registerShutdownHook( managementService );
         // end::startDb[]

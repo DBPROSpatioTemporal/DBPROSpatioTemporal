@@ -39,6 +39,12 @@
             <version>2.5.3.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.neo4j</groupId>
+            <artifactId>neo4j-bolt</artifactId>
+            <version>4.2.1</version>
+        </dependency>
+
 
 
     </dependencies>
