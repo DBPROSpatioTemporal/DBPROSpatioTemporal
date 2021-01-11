@@ -1,4 +1,4 @@
-package balint.test;
+package embedded;
 
 
 
@@ -22,16 +22,16 @@ package balint.test;
  */
 
 
-import java.io.IOException;
+import java.io.IOException; 
 
 import java.util.Map;
 import java.util.Scanner;
 
 
-import database.EmbeddedDb;
 
 
-public class EmbeddedNeo4j
+
+public class EmbeddedApp
 
 {
 	

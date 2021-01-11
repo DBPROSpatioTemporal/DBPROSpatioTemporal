@@ -1,4 +1,5 @@
-import net.aksingh.owmjapis.api.APIException;
+package weather;
+import net.aksingh.owmjapis.api.APIException; 
 import net.aksingh.owmjapis.core.OWM;
 import net.aksingh.owmjapis.model.CurrentWeather;
 import net.aksingh.owmjapis.model.HourlyWeatherForecast;
