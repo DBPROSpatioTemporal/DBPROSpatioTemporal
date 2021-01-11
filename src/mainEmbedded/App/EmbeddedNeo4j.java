@@ -1,6 +1,4 @@
-package balint.test;
-
-
+package mainEmbedded.App;
 
 /*
  * Licensed to Neo4j under one or more contributor
@@ -22,13 +20,13 @@ package balint.test;
  */
 
 
+import mainEmbedded.database.EmbeddedDb;
+
 import java.io.IOException;
 
 import java.util.Map;
 import java.util.Scanner;
 
-
-import database.EmbeddedDb;
 
 
 public class EmbeddedNeo4j

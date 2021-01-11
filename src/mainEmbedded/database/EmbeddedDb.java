@@ -1,4 +1,4 @@
-package database;
+package mainEmbedded.database;
 
 import static org.neo4j.configuration.GraphDatabaseSettings.DEFAULT_DATABASE_NAME;
 

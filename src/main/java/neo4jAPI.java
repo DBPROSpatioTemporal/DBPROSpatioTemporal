@@ -28,25 +28,51 @@ public class neo4jAPI {
        this.driver = GraphDatabase.driver(URI_NEO4J, AuthTokens.basic(DEFAULT_USERNAME, PASSWORD));
     }
 
-    /* TODO: just a place holder. Make sure it is a MATCH request
-        See what type of Queries there are so you can categorize them through String splitting
-     */
-    public List<String> request(String cypherQuery) {
+
+    // TODO: save current weather properties in neo4j
+    public String setCurrentWeather(String weather) {
+
+        return null;
+    }
+
+    // Here you get the Coordinates (Latitude and Longitude) form a specific Station in the neo4j Database
+    // TODO: make into ONE Transaction (maybe as MAP with StationName and coords)
+
+    public double[] getLatitudeAndLongitude(String stationName) {
+        double[] geoCoordinates = new double[2];
+        String cypherQueryLatitude = "MATCH (Station {name: '" + stationName + "'}) RETURN Station.breitengrad AS Lat";
+        String cypherQueryLongitude = "MATCH (Station {name: '" + stationName + "'}) RETURN Station.laengengrad AS Long";
+
         try (Session session = driver.session()) {
-            List<String> stations = session.readTransaction(tx -> {
-                return tx.run(cypherQuery).stream()           // Here is the Transaction Query
-                        .map(record -> record.get("stationNames").asString())
+            List<String> Latitude = session.readTransaction(tx -> {
+                return tx.run(cypherQueryLatitude).stream()           // Here is the Latitude Transaction Query
+                        .map(record -> record.get("Lat").asString())
                         .collect(Collectors.toList());
             });
 
-            return stations;
+            List<String> Longitude = session.readTransaction(tx -> {
+                return tx.run(cypherQueryLongitude).stream()           // Here is the Longitude Transaction Query
+                        .map(record -> record.get("Long").asString())
+                        .collect(Collectors.toList());
+
+
+            });
+
+            geoCoordinates[0] = Double.parseDouble(Latitude.get(0));
+            geoCoordinates[1] = Double.parseDouble(Longitude.get(0));
+            printGeoCoordinates(stationName, geoCoordinates);
+            return geoCoordinates;
         }
+
 
     }
 
-    // TODO: same as other function but with CREATE(?)
-    public String send(String cypherQuery) {
-        return null;
+    private void printGeoCoordinates(String stationName, double[] geoCoordinates) {
+        System.out.println(
+                "The coordinates for " + stationName + " are: \n" +
+                "Latitude: " + geoCoordinates[0] + "\n" +
+                "Longitude: " + geoCoordinates[1] + "\n"
+        );
     }
 
     public void closeDriver() {
