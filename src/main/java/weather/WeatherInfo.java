@@ -1,3 +1,5 @@
+package weather;
+
 public class WeatherInfo {
 
     private final String conditionId;
