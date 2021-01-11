@@ -1,3 +1,4 @@
+package weather;
 import net.aksingh.owmjapis.api.APIException;
 
 public class App {

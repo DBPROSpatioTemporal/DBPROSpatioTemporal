@@ -1,13 +1,11 @@
-package mainEmbedded.database;
+package embedded;
 
 import static org.neo4j.configuration.GraphDatabaseSettings.DEFAULT_DATABASE_NAME;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,6 +18,8 @@ import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.io.fs.FileUtils;
 
+import weather.owmAPI;
+
 public class EmbeddedDb {
 	
 	
@@ -27,6 +27,8 @@ public class EmbeddedDb {
 	 
 	 private GraphDatabaseService graphDb;
 	 private DatabaseManagementService managementService;
+	 
+	 private owmAPI weatherAPI = new owmAPI();
 	 
 	 
 	 public GraphDatabaseService getDb() {
@@ -37,6 +39,11 @@ public class EmbeddedDb {
 		 return this.managementService;
 	 }
 	 
+	 private void updateWeather() {
+		 System.out.print("updating Weather");
+//		 for()
+//		 weatherAPI.requestWeather(Location);
+	 }
 	 
 	 public Map<Integer,String> getStations() {
 		 
@@ -183,6 +190,8 @@ public class EmbeddedDb {
 		           System.out.println(result.toString());
 		           
 		        }
+			 
+			 updateWeather();
 			
 			
 		}

@@ -1,4 +1,6 @@
-package mainEmbedded.App;
+package embedded;
+
+
 
 /*
  * Licensed to Neo4j under one or more contributor
@@ -20,16 +22,16 @@ package mainEmbedded.App;
  */
 
 
-import mainEmbedded.database.EmbeddedDb;
-
-import java.io.IOException;
+import java.io.IOException; 
 
 import java.util.Map;
 import java.util.Scanner;
 
 
 
-public class EmbeddedNeo4j
+
+
+public class EmbeddedApp
 
 {
 	
