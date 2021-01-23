@@ -68,6 +68,7 @@ public class neo4jAPI {
 
     }
 
+    // Printing the geolocation Coordinates for the requested Station
     private void printGeoCoordinates(String stationName, double[] geoCoordinates) {
         System.out.println(
                 "The coordinates for " + stationName + " are: \n" +
