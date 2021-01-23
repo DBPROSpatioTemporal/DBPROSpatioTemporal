@@ -1,33 +1,74 @@
 package weather;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
 import net.aksingh.owmjapis.api.APIException;
 
 public class App {
 
     public static void main(String[] args) throws APIException {
+    	
+    	
         // neo4j and OpenWeatherMaps
-        neo4jAPI neo4j = new neo4jAPI();
-        owmAPI owm = new owmAPI();
+    	owmAPI owm = new owmAPI();
+        neo4jAPI neo4j = new neo4jAPI(owm);
+        
+        
+        
+        //placeholders for start and Endstations 
+        String startStation = null;
+    	String endStation = null;
+    	String passengerT = "";
+        
+    	//Map of Stations and Ids. User selects stations through their ID
+    	Map<Integer, String> stations = neo4j.getStations();
+    	Map<Integer,String> passengerType = new HashMap<>();
+    	passengerType.put(1, "Senior");
+    	passengerType.put(2, "Family with young kids");
+    	passengerType.put(3, "Disabled");
+    	
+         
+        Scanner scanner = new Scanner(System.in);
 
-        String stationName = "Ostkreuz";
-
-        // get the coords of the Station (stationName) from neo4j
-        double[] stationCoords = neo4j.getLatitudeAndLongitude(stationName);
-
-        // Get the weather of the coords form OpenWeatherMaps and save results in weather.WeatherInfo Object
-        WeatherInfo currentWeather = owm.requestCurrentWeather(stationCoords[0], stationCoords[1]);
-
-        // print weather info
-        System.out.println(currentWeather.getMainInfo());
-        System.out.println(currentWeather.getMoreInfo());
-        System.out.println(currentWeather.getTemperature());
-        System.out.println(currentWeather.isWeatherGood());
-
-        // Get hourly Weather
-        owm.requestHourlyWeather(stationCoords[0], stationCoords[1]);
-
-        // Save current Weather in neo4j form the weather.WeatherInfo Object
-        neo4j.setCurrentWeather(currentWeather.getMainInfo());
-
-        neo4j.closeDriver();
+        //endless loop for repreated input
+        while(true) {
+        	
+        	
+        	System.out.println("Type shutdown to shut down database");
+        	System.out.println("Type route to calculate a route");
+        	String s = scanner.nextLine();
+        	
+        	//break out of loop
+        	if (s.equals("shutdown")) {
+        		
+        		break;
+        		}
+        	
+        	
+        	//where work is actually done
+        	if(s.equals("route")) {
+        		
+        		stations.forEach((k,v)->System.out.println("Station ID: " + k +"            Station Name: " + v));
+        		System.out.println("Please type ID of START station");
+        		startStation = stations.get(scanner.nextInt());
+        		System.out.println("Please type ID of END station");
+        		endStation = stations.get(scanner.nextInt());
+        		passengerType.forEach((k,v)->System.out.println("Passenger Type ID: " + k +"            Passenger Type: " + v));
+        		System.out.println("Please enter Passenger Type");
+        		passengerT = passengerType.get(scanner.nextInt());
+        		
+                
+                neo4j.calculateRoute(startStation,endStation,passengerT);
+        		
+        		
+        		
+        		
+        		}
+        	
+        	}
+        
+       neo4j.closeDriver();
+       scanner.close();
     }
 }

@@ -27,15 +27,15 @@ public class owmAPI {
 
         // getting current weather data for the "Berlin" city
         HourlyWeatherForecast hwf = owm.hourlyWeatherForecastByCoords(latitude, longitude);
-        System.out.println(hwf.getDataList().size());
-        System.out.println(hwf.toString());
+//        System.out.println(hwf.getDataList().size());
+//        System.out.println(hwf.toString());
 
         WeatherData weatherDataForecast1 = hwf.getDataList().get(0);
         WeatherData weatherDataForecast2 = hwf.getDataList().get(1);
 
         // TODO: ??????
-        System.out.println(weatherDataForecast1.getDateTime());
-        System.out.println(weatherDataForecast1.getDateTimeText());
+//        System.out.println(weatherDataForecast1.getDateTime());
+//        System.out.println(weatherDataForecast1.getDateTimeText());
 
 
         return hwf.getDataList().toString();
@@ -65,7 +65,7 @@ public class owmAPI {
 
 
         }
-        System.out.println(cwd.getMainData().getTemp());
+//        routeSystem.out.println(cwd.getMainData().getTemp());
         
         // Get out of the request all relevant Weather Data
         String weatherList = cwd.getWeatherList().toString();
