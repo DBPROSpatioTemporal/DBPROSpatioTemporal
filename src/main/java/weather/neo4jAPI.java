@@ -3,6 +3,7 @@ import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.Query;
+import org.neo4j.driver.Record;
 import org.neo4j.driver.Session;
 import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
@@ -72,6 +73,16 @@ public class neo4jAPI {
 		}
 
         
+    }
+    
+    /**
+     * call function in weather API that gets predictive weather data
+     * @param station
+     */
+    public void setFutureWeather(String station) {
+    	
+    	// upadte zukuenftigesWetter attribut to a one or zero
+    	
     }
 
     // Here you get the Coordinates (Latitude and Longitude) form a specific Station in the neo4j Database
@@ -160,27 +171,51 @@ public class neo4jAPI {
     
     
     
+    private void updateWeather (Map<Integer,String> stations){
+    	
+    	stations.forEach((k,v)-> {setCurrentWeather(v);
+    							  setFutureWeather(v);
+    		});
+    	
+    	
+    	
+    }
     
+    private void outputPath (List<org.neo4j.driver.Record> list) {
+    	double travelTime = 0.0;
+    	
+    	
+    	list.forEach(x-> {System.out.print(x.get("name") +"-->");
+    					
+    					  });
+    	
+    	for(Record r : list){
+    		travelTime += r.get("cost").asDouble();
+    		
+    	}
+    	
+    	System.out.println("\nTotal Travel Time: " + travelTime +" minutes");
+    	}
     
 
 	public void calculateRoute(String startStation, String endStation, String passengerT) {
 		
 		System.out.println(passengerT);
-		setCurrentWeather(startStation);
-		setCurrentWeather(endStation);
+		//setCurrentWeather(startStation);
+		//setCurrentWeather(endStation);
 		
 		System.out.println("Calculating route. Beep Boop");
 //		System.out.println("Start station: " + startStation);
 //		System.out.println("End station: " + endStation);
 		
+		//updateWeather(getStations());
+		
 		 try ( Session session = driver.session())
 	        {
-			 	Map<String,Object> params = new HashMap<>();
-			 	params.put( "startStation", startStation );
-			 	params.put( "endStation", endStation );
+			 	
 			 	
 			 
-	           String query1 = "MATCH (start:Station {name: '$startStation'}), (end:Station {name: '$endStation'})\r\n"
+	           String query1 = "MATCH (start:Station {name: '" + startStation+ "'}), (end:Station {name: '"+endStation+"'})\r\n"
 	           		+ "CALL gds.alpha.shortestPath.stream({\r\n"
 	           		+ "  nodeQuery: 'MATCH (s:Station) WHERE s.aktuellesWetter = 1 AND s.zukünftigesWetter = 1 RETURN id(s) as id',\r\n"
 	           		+ "  relationshipQuery: 'MATCH (s: Station)-[r:FERNBAHN|SBAHN|UBAHN]-(t: Station) RETURN id(s) as source, id(t) as target, r.distanz as cost',\r\n"
@@ -194,8 +229,12 @@ public class neo4jAPI {
 	           
 	           String query2 ="BREAK IT ALL!";
 	           
+	           String query3 = "Match (n) return n.name as name;";
 	           
-	           session.run(query1, params).list().forEach(x-> System.out.println(x));
+	           
+	           List<org.neo4j.driver.Record> list =  session.run(query1).list();
+	           System.out.println(list.size());
+	           outputPath(list);
 	           //System.out.println(result.toString());
 	           
 	        }

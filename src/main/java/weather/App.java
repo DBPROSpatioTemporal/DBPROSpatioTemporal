@@ -25,8 +25,11 @@ public class App {
     	Map<Integer, String> stations = neo4j.getStations();
     	Map<Integer,String> passengerType = new HashMap<>();
     	passengerType.put(1, "Senior");
-    	passengerType.put(2, "Family with young kids");
-    	passengerType.put(3, "Disabled");
+    	passengerType.put(2, "Family with stroller");
+    	passengerType.put(3, "Luggage");
+    	passengerType.put(4, "wheelchair");
+    	passengerType.put(5, "no restriction");
+    	
     	
          
         Scanner scanner = new Scanner(System.in);
