@@ -1,7 +1,7 @@
 MATCH (start:Station {name: 'Köln Hauptbahnhof'}), (end:Station {name: 'Ostkreuz'})
 CALL gds.alpha.shortestPath.stream({
   nodeQuery: 'MATCH (s:Station) WHERE s.aktuellesWetter = 1 AND s.zukünftigesWetter = 1 RETURN id(s) as id',
-  relationshipQuery: 'MATCH (s: Station)-[r:FERNBAHN|SBAHN|UBAHN]-(t: Station) RETURN id(s) as source, id(t) as target, r.distanz as cost',
+  relationshipQuery: 'MATCH (s: Station)-[r:FERNBAHN|SBAHN|UBAHN]-(t: Station) RETURN id(s) as source, id(t) as target, r.fahrzeit as cost',
      startNode: start,
      endNode: end,
     relationshipWeightProperty: 'cost',
