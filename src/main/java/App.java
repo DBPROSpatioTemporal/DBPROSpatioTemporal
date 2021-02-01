@@ -1,9 +1,10 @@
-package weather;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import OpenWeatherMap.OpenWeatherMap;
 import net.aksingh.owmjapis.api.APIException;
+import Neo4J.neo4jAPI;
 
 public class App {
 
@@ -11,7 +12,7 @@ public class App {
     	
     	
         // neo4j and OpenWeatherMaps
-    	owmAPI owm = new owmAPI();
+    	OpenWeatherMap owm = new OpenWeatherMap();
         neo4jAPI neo4j = new neo4jAPI(owm);
         
         

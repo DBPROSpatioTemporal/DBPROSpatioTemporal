@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import OpenWeatherMap.OpenWeatherMap;
 import org.neo4j.configuration.connectors.BoltConnector;
 import org.neo4j.configuration.helpers.SocketAddress;
 import org.neo4j.dbms.api.DatabaseManagementService;
@@ -18,8 +19,6 @@ import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.io.fs.FileUtils;
 
-import weather.owmAPI;
-
 public class EmbeddedDb {
 	
 	
@@ -28,7 +27,7 @@ public class EmbeddedDb {
 	 private GraphDatabaseService graphDb;
 	 private DatabaseManagementService managementService;
 	 
-	 private owmAPI weatherAPI = new owmAPI();
+	 private OpenWeatherMap weatherAPI = new OpenWeatherMap();
 	 
 	 
 	 public GraphDatabaseService getDb() {

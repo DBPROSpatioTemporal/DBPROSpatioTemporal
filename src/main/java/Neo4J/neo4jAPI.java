@@ -1,15 +1,14 @@
-package weather;
+package Neo4J;
+import OpenWeatherMap.OpenWeatherMap;
+import OpenWeatherMap.WeatherInfo.WeatherInfo;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.Query;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Session;
-import org.neo4j.graphdb.Result;
-import org.neo4j.graphdb.Transaction;
 
-import net.aksingh.owmjapis.api.APIException;
-
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,11 +31,11 @@ public class neo4jAPI {
     private static final String URI_NEO4J = "neo4j://localhost:7687";
     private static final String DEFAULT_USERNAME = "neo4j";
     private static final String PASSWORD = "password";      // NOT SECURE!! needs to be more secure
-    private  owmAPI owmAPI;
+    private OpenWeatherMap owmAPI;
 
     private Driver driver = null;
 
-    public neo4jAPI(owmAPI owmAPI) {
+    public neo4jAPI(OpenWeatherMap owmAPI) {
        this.driver = GraphDatabase.driver(URI_NEO4J, AuthTokens.basic(DEFAULT_USERNAME, PASSWORD));
        this.owmAPI = owmAPI;
     }
@@ -55,7 +54,7 @@ public class neo4jAPI {
         // Get the weather of the coords form OpenWeatherMaps and save results in weather.WeatherInfo Object
         WeatherInfo currentWeather;
 		try {
-			currentWeather = owmAPI.requestCurrentWeather(stationCoords[0], stationCoords[1]);
+			currentWeather = owmAPI.requestWeather(stationCoords[0], stationCoords[1]);
 			 // print weather info
 //	        System.out.println(currentWeather.getMainInfo());
 //	        System.out.println(currentWeather.getMoreInfo());
@@ -63,11 +62,11 @@ public class neo4jAPI {
 //	        System.out.println(currentWeather.isWeatherGood());
 
 	        // Get hourly Weather
-	        owmAPI.requestHourlyWeather(stationCoords[0], stationCoords[1]);
+
 
 	       //TODO:  Save current Weather in neo4j form the weather.WeatherInfo Object
 	       //setCurrentWeather(currentWeather.getMainInfo());
-		} catch (APIException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -110,7 +109,7 @@ public class neo4jAPI {
 
             geoCoordinates[0] = Double.parseDouble(Latitude.get(0));
             geoCoordinates[1] = Double.parseDouble(Longitude.get(0));
-            //printGeoCoordinates(stationName, geoCoordinates);
+            printGeoCoordinates(stationName, geoCoordinates);
             return geoCoordinates;
         }
 
