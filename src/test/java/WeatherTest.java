@@ -19,11 +19,5 @@ public class WeatherTest {
         System.out.println(weather.getHourly(48).toString());
     }
 
-    @Test
-    public void isWeatherGood() throws IOException {
-        WeatherInfo weather = owmnew.requestWeather(52.503056, 13.468889);
-        System.out.println(weather.getCurrent().isWeatherGood());
-        System.out.println(weather.getHourly(47).isWeatherGood());
-    }
 
 }

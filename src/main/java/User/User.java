@@ -14,7 +14,11 @@ public class User {
 
     public User(int age, boolean hasLuggage, boolean hasWheelchair,
                 boolean hasStroller, boolean hasChildren) {
-
+        this.age = age;
+        this.hasLuggage = hasLuggage;
+        this.hasWheelchair = hasWheelchair;
+        this.hasStroller = hasStroller;
+        this.hasChildren = hasChildren;
     }
 
     /**

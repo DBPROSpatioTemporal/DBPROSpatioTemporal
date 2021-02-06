@@ -13,7 +13,7 @@ public class App {
     	
         // neo4j and OpenWeatherMaps
     	OpenWeatherMap owm = new OpenWeatherMap();
-        neo4jAPI neo4j = new neo4jAPI(owm);
+        neo4jAPI neo4j = new neo4jAPI(owm); // TODO: decouple neo4j with owm
         
         
         
@@ -21,7 +21,8 @@ public class App {
         String startStation = null;
     	String endStation = null;
     	String passengerT = "";
-        
+
+    	// TODO: make User class
     	//Map of Stations and Ids. User selects stations through their ID
     	Map<Integer, String> stations = neo4j.getStations();
     	Map<Integer,String> passengerType = new HashMap<>();

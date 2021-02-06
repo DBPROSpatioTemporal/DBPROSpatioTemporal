@@ -23,30 +23,6 @@ public class WeatherTime {
 
     }
 
-
-    //TODO: This to be added in User classes since every User has his own preference in Weather. Don't keep it here!!!
-    /**
-     * checks if the weather condition is good.
-     * Temperature must be between -10 and 40 degrees Celsius
-     * https://openweathermap.org/weather-conditions
-     * @return true if weather is good and false otherwise.
-     */
-    public boolean isWeatherGood() {
-        // Checks if the Temperature is between -10 and 40 degrees. If not returns false
-        if (temp < -10.0 || temp > 40.0) {
-            return false;
-        }
-        // Checks what the weather is like.
-        // TODO: make it more specific
-        if (weather.get(0).getMain().equals("Thunderstorm")  ||
-                weather.get(0).getMain().equals("Drizzle")  ||
-                weather.get(0).getMain().equals("Rain")  ||
-                weather.get(0).getMain().equals("Snow") ) {
-            return false;
-        }
-        return true;
-    }
-
     @Override
     public String toString() {
         return "WeatherTime{" +
