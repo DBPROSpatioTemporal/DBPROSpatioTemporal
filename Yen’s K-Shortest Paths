@@ -1,14 +1,14 @@
 MATCH (start:Station{name: 'Köln Hauptbahnhof'}), (end:Station{name: 'Ostkreuz'})
 CALL gds.alpha.kShortestPaths.stream({
-  nodeQuery: 'MATCH (s:Station) WHERE s.aktuellesWetter = 1 AND s.zukünftigesWetter = 1 AND s.rollstuhl = "ja" RETURN id(s) as id',
+  nodeQuery: 'MATCH (s:Station) WHERE  s.rollstuhl = "yes" RETURN id(s) as id',
   relationshipQuery: 'MATCH (s: Station)-[r:FERNBAHN|SBAHN|UBAHN]-(t: Station) RETURN id(s) as source, id(t) as target, r.fahrzeit as cost',
   startNode: start,
   endNode: end,
-  k: 30,
+  k: 100,
   relationshipWeightProperty: 'cost',
   validateRelationships: false
 })
 YIELD index, nodeIds, costs
-RETURN [node IN gds.util.asNodes(nodeIds) | node.name] AS places,
+RETURN [node IN gds.util.asNodes(nodeIds) | node] AS places,
        costs,
        reduce(acc = 0.0, cost IN costs | acc + cost) AS totalCost
