@@ -1,9 +1,5 @@
 package User;
 
-/*
- * TODO: make it abstract class? and having the different type of people (old, young)
- *  have different methods of evaluating the weather?
-  */
 public class User {
     private int age;
     private boolean hasLuggage;
