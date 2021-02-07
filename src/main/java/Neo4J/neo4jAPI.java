@@ -1,20 +1,23 @@
 package Neo4J;
-import OpenWeatherMap.OpenWeatherMap;
-import OpenWeatherMap.WeatherInfo.WeatherInfo;
-import org.neo4j.driver.AuthTokens;
-import org.neo4j.driver.Driver;
-import org.neo4j.driver.GraphDatabase;
-import org.neo4j.driver.Query;
-import org.neo4j.driver.Record;
-import org.neo4j.driver.Session;
-
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.neo4j.ogm.session.Session;
+
+import DomainModel.Station;
+import OpenWeatherMap.OpenWeatherMap;
+import OpenWeatherMap.WeatherInfo.WeatherInfo;
+import User.User;
+import UserWeatherEvaluation.UserWeatherEvaluation;
+
 
 
  /*
@@ -27,223 +30,144 @@ import java.util.stream.Collectors;
             */
 
 public class neo4jAPI {
+	
+  /**
+   * use sessionFactory to create Sessions
+   */
+    private Neo4jSessionFactory sessionFactory = Neo4jSessionFactory.getInstance();
+    private OpenWeatherMap owmAPI = new OpenWeatherMap();
 
-    private static final String URI_NEO4J = "neo4j://localhost:7687";
-    private static final String DEFAULT_USERNAME = "neo4j";
-    private static final String PASSWORD = "password";      // NOT SECURE!! needs to be more secure
-    private OpenWeatherMap owmAPI;
-
-    private Driver driver = null;
-
-    public neo4jAPI(OpenWeatherMap owmAPI) {
-       this.driver = GraphDatabase.driver(URI_NEO4J, AuthTokens.basic(DEFAULT_USERNAME, PASSWORD));
-       this.owmAPI = owmAPI;
-    }
-
-
-   /**
-    * Function takes Station (represented as a String) and updates the weather status within neo4j for that station
-    * @param station
-    * @return
-    */
-    public void setCurrentWeather(String station) {
+     /**
+     * Helper function to present user with all stations
+     * @return
+     */
+    public Map<Integer,String> getStations() {
     	
-		 // get the coords of the Station (stationName) from neo4j
-        double[] stationCoords = getLatitudeAndLongitude(station);
-
-        // Get the weather of the coords form OpenWeatherMaps and save results in weather.WeatherInfo Object
-        WeatherInfo currentWeather;
+    	 Session session = sessionFactory.getNeo4jSession();
+    	 Map<Integer,String> stationsAndIds = new HashMap<Integer,String>();
+		 Set<Station> stations = new HashSet<Station>();
+		 String query = "Match (n) return n;";
+		 session.query(query,Collections.emptyMap()).forEach(x->stations.add((Station) x.get("n")));
+	        	
+	        	int id= 0;
+	        	for(Station s : stations) {
+	        		stationsAndIds.put(id, s.getName());
+	        		id++;
+	        	}
+	        	return stationsAndIds;
+	 }
+    
+    /**Either returns the first path in bestPaths for which all stations either have good weather conditions or have a roof
+     * or null
+     * 
+     * @param bestPaths
+     * @param user
+     * @return
+     * @throws NumberFormatException
+     * @throws IOException
+     */
+    private Map<String,Object> updateWeatherOnBestPaths(Iterable<Map<String,Object>> bestPaths, User user) throws NumberFormatException, IOException{
+    	
+    	Iterator<Map<String, Object>> it = bestPaths.iterator();
+    	Map<String,Object> bestPath= null;
+    	while(it.hasNext()) {
+    		Map<String, Object> result = it.next();
+    		ArrayList<Station> stationsOnPath = (ArrayList<Station>) result.get("places");
+    		boolean goodPath = false;
+    		for(int i=0; i<=stationsOnPath.size();i++){
+    			
+    			Station s = stationsOnPath.get(i);
+    			WeatherInfo weatherS = owmAPI.requestWeather(Double.parseDouble(s.getBreitengrad()), Double.parseDouble(s.getLaengengrad())); 
+    			UserWeatherEvaluation eval = new UserWeatherEvaluation(user, weatherS);
+    			
+    			if(!eval.isCurrentWeatherGood()) {
+    				if(s.getÜberdacht().equals("yes")) {
+    					goodPath = true;
+    				}
+    				else {
+    					goodPath = false;
+        				break;
+    				}
+    			}
+    			goodPath=true;
+    		}
+    		
+    		if(goodPath) {
+    			bestPath = result;
+    			break;
+    			}
+    		}
+    	
+    	return bestPath;
+    	
+    }
+    
+    /**
+     * builds cypher query and sends to Neo4j where route calculation is done using Yen's K-Shortest Paths
+     * Returns a data structure filled with Map<String,Object>. Each map represents a path from start to end station and contains cost information (cummulative travel time)
+     * @param startStation
+     * @param endStation
+     * @param hasWheelChair
+     * @return
+     */
+    private Iterable<Map<String,Object>> buildAndSendCypherQuery(String startStation, String endStation, boolean hasWheelChair){
+    	char singleQuotes = '\'';
+    	char doubleQuotes = '"';
+    	//TODO: make hasWheelChair have several options
+    	int wheelChairEncoding = 0;
+    	String wheelChairQuery = "";
+    	switch (wheelChairEncoding) {
+    	case 0: 
+    		wheelChairQuery = "WHERE  s.rollstuhl = "+doubleQuotes+ "yes" +doubleQuotes;
+    		break;
+    	case 1:
+    		break;
+    	case 2:
+    		break;
+    	}
+    	
+    	String query =   
+    			"MATCH (start:Station{name: " + singleQuotes + startStation + singleQuotes + "}), (end:Station{name: "+singleQuotes+endStation+singleQuotes+"})"+
+    			"CALL gds.alpha.kShortestPaths.stream({" +
+    			  "nodeQuery: "+singleQuotes+ "MATCH (s:Station) "+ wheelChairQuery+" RETURN id(s) as id"+singleQuotes+","+
+    			  "relationshipQuery: "+singleQuotes+ "MATCH (s: Station)-[r:FERNBAHN|SBAHN|UBAHN]-(t: Station) RETURN id(s) as source, id(t) as target, r.fahrzeit as cost"+singleQuotes+","+
+    			  "startNode: start,"+
+    			  "endNode: end,"+
+    			  "k: 100,"+
+    			  "relationshipWeightProperty: "+singleQuotes+"cost"+singleQuotes+","+
+    			  "validateRelationships: false"+
+    			"})"+
+    			"YIELD index, nodeIds, costs "+
+    			"RETURN [node IN gds.util.asNodes(nodeIds) | node] AS places,"+
+    			       "costs,"+
+    			       "reduce(acc = 0.0, cost IN costs | acc + cost) AS totalCost";
+    	Session session = sessionFactory.getNeo4jSession();
+    	Iterable<Map<String,Object>> result = session.query(query,Collections.emptyMap());
+    	return result;
+    }
+    
+    /**
+     * acts as interface to rest of class
+     * @param startStation
+     * @param endStation
+     * @param user
+     */
+    public void calculateRoute(String startStation, String endStation, User user) {
+		
+		Iterable<Map<String,Object>> bestPaths = buildAndSendCypherQuery(startStation,  endStation, user.hasWheelchair());
+		Map<String,Object> bestPath;
 		try {
-			currentWeather = owmAPI.requestWeather(stationCoords[0], stationCoords[1]);
-			 // print weather info
-//	        System.out.println(currentWeather.getMainInfo());
-//	        System.out.println(currentWeather.getMoreInfo());
-//	        System.out.println(currentWeather.getTemperature());
-//	        System.out.println(currentWeather.isWeatherGood());
-
-	        // Get hourly Weather
-
-
-	       //TODO:  Save current Weather in neo4j form the weather.WeatherInfo Object
-	       //setCurrentWeather(currentWeather.getMainInfo());
+		bestPath = updateWeatherOnBestPaths(bestPaths,user);
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-        
-    }
-    
-    /**
-     * call function in weather API that gets predictive weather data
-     * @param station
-     */
-    public void setFutureWeather(String station) {
-    	
-    	// upadte zukuenftigesWetter attribut to a one or zero
-    	
-    }
-
-    // Here you get the Coordinates (Latitude and Longitude) form a specific Station in the neo4j Database
-    // TODO: make into ONE Transaction (maybe as MAP with StationName and coords)
-
-    public double[] getLatitudeAndLongitude(String stationName) {
-        double[] geoCoordinates = new double[2];
-        String cypherQueryLatitude = "MATCH (Station {name: '" + stationName + "'}) RETURN Station.breitengrad AS Lat";
-        String cypherQueryLongitude = "MATCH (Station {name: '" + stationName + "'}) RETURN Station.laengengrad AS Long";
-
-        try (Session session = driver.session()) {
-            List<String> Latitude = session.readTransaction(tx -> {
-                return tx.run(cypherQueryLatitude).stream()           // Here is the Latitude Transaction Query
-                        .map(record -> record.get("Lat").asString())
-                        .collect(Collectors.toList());
-            });
-
-            List<String> Longitude = session.readTransaction(tx -> {
-                return tx.run(cypherQueryLongitude).stream()           // Here is the Longitude Transaction Query
-                        .map(record -> record.get("Long").asString())
-                        .collect(Collectors.toList());
-
-
-            });
-
-            geoCoordinates[0] = Double.parseDouble(Latitude.get(0));
-            geoCoordinates[1] = Double.parseDouble(Longitude.get(0));
-            printGeoCoordinates(stationName, geoCoordinates);
-            return geoCoordinates;
-        }
-
-
-    }
-    
-    public Map<Integer,String> getStations() {
-    	
-    	
-		 
-		 Map<Integer,String> stationsAndIds = new HashMap<Integer,String>();
-		 
-		 Set<String> stations = new HashSet<String>();
-
-		 try (Session session = driver.session()) {
-	        	
-	        	Query query = new Query("Match (n) return n.name as name;");
-	        	//next().asMap().forEach((k,v)->  interm.add(v.toString()));
-	        	
-	        	session.run(query).list().forEach(x-> stations.add(x.get("name").asString()));;
-	        	
-	        	}
-		 
 		
-	        
-	          
-		 
-	        	
-	        	int id= 0;
-	        	for(String s : stations) {
-	        		//System.out.println(s);
-	        		stationsAndIds.put(id, s);
-	        		id++;
-	        	}
-	        	
-	        	//stationsAndIds.forEach((k,v)-> System.out.println("id: " +k +"; value: "+v));
-	        	
-	        	
-	        	
-	        	return stationsAndIds;
 		
-		 
-	 }
-    
-
-    // Printing the geolocation Coordinates for the requested Station
-    private void printGeoCoordinates(String stationName, double[] geoCoordinates) {
-        System.out.println(
-                "The coordinates for " + stationName + " are: \n" +
-                "Latitude: " + geoCoordinates[0] + "\n" +
-                "Longitude: " + geoCoordinates[1] + "\n"
-        );
-    }
-
-    public void closeDriver() {
-        driver.close();
-    }
-    
-    
-    
-    private void updateWeather (Map<Integer,String> stations){
-    	
-    	stations.forEach((k,v)-> {setCurrentWeather(v);
-    							  setFutureWeather(v);
-    		});
-    	
-    	
-    	
-    }
-    
-    private void outputPath (List<org.neo4j.driver.Record> list) {
-    	double travelTime = 0.0;
-    	
-    	
-    	list.forEach(x-> {System.out.print(x.get("name") +"-->");
-    					
-    					  });
-    	
-    	for(Record r : list){
-    		travelTime += r.get("cost").asDouble();
-    		
-    	}
-    	
-    	System.out.println("\nTotal Travel Time: " + travelTime +" minutes");
-    	}
-    
-
-	public void calculateRoute(String startStation, String endStation, String passengerT) {
 		
-		System.out.println(passengerT);
-		//setCurrentWeather(startStation);
-		//setCurrentWeather(endStation);
-		
-		System.out.println("Calculating route. Beep Boop");
-//		System.out.println("Start station: " + startStation);
-//		System.out.println("End station: " + endStation);
-		
-		//updateWeather(getStations());
-		
-		 try ( Session session = driver.session())
-	        {
-			 	
-			 	
-			 
-	           String query1 = "MATCH (start:Station {name: '" + startStation+ "'}), (end:Station {name: '"+endStation+"'})\r\n"
-	           		+ "CALL gds.alpha.shortestPath.stream({\r\n"
-	           		+ "  nodeQuery: 'MATCH (s:Station) WHERE s.aktuellesWetter = 1 AND s.zukünftigesWetter = 1 RETURN id(s) as id',\r\n"
-	           		+ "  relationshipQuery: 'MATCH (s: Station)-[r:FERNBAHN|SBAHN|UBAHN]-(t: Station) RETURN id(s) as source, id(t) as target, r.distanz as cost',\r\n"
-	           		+ "     startNode: start,\r\n"
-	           		+ "     endNode: end,\r\n"
-	           		+ "    relationshipWeightProperty: 'cost',\r\n"
-	           		+ "  validateRelationships: false\r\n"
-	           		+ "  })\r\n"
-	           		+ "  YIELD nodeId, cost\r\n"
-	           		+ "   RETURN gds.util.asNode(nodeId).name AS name, cost";
-	           
-	           String query2 ="BREAK IT ALL!";
-	           
-	           String query3 = "Match (n) return n.name as name;";
-	           
-	           
-	           List<org.neo4j.driver.Record> list =  session.run(query1).list();
-	           System.out.println(list.size());
-	           outputPath(list);
-	           //System.out.println(result.toString());
-	           
-	        }
-		
-
-
-       
-
-		
-		// TODO Auto-generated method stub
 		
 	}
 }

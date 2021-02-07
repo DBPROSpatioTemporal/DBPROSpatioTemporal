@@ -15,12 +15,21 @@
 
     <dependencies>
 
-  	<dependency>
-    	   <groupId>org.neo4j</groupId>
-    	   <artifactId>neo4j-ogm-embedded-driver</artifactId>
-    	   <version>3.2.19</version>
-    	   <scope>runtime</scope>
-	</dependency>
+ <dependency>
+    <groupId>org.neo4j</groupId>
+    <artifactId>neo4j-ogm-core</artifactId>
+    <version>3.2.20</version>
+    <scope>compile</scope>
+ </dependency>
+
+
+ <dependency>
+    <groupId>org.neo4j</groupId>
+    <artifactId>neo4j-ogm-bolt-driver</artifactId>
+    <version>3.2.20</version>
+    <scope>runtime</scope>
+ </dependency>
+  
 
         <dependency>
             <groupId>junit</groupId>
