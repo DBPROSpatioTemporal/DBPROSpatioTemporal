@@ -7,8 +7,8 @@ public class RelationshipTypeFERNBAHN {
 	@Id @GeneratedValue
 	Long id;
 	
-	String distanz;
-	String fahrzeit;
+	long distanz;
+	long fahrzeit;
 	
 	@StartNode
 	Station startStation;

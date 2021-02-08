@@ -73,23 +73,17 @@ public class neo4jAPI {
     	while(it.hasNext()) {
     		Map<String, Object> result = it.next();
     		ArrayList<Station> stationsOnPath = (ArrayList<Station>) result.get("places");
-    		boolean goodPath = false;
-    		for(int i=0; i<=stationsOnPath.size();i++){
+    		boolean goodPath = true;
+    		for(int i=0; i<stationsOnPath.size();i++){
     			
     			Station s = stationsOnPath.get(i);
-    			WeatherInfo weatherS = owmAPI.requestWeather(Double.parseDouble(s.getBreitengrad()), Double.parseDouble(s.getLaengengrad())); 
+    			WeatherInfo weatherS = owmAPI.requestWeather(s.getBreitengrad(), s.getLaengengrad()); 
     			UserWeatherEvaluation eval = new UserWeatherEvaluation(user, weatherS);
-    			
-    			if(!eval.isCurrentWeatherGood()) {
-    				if(s.getÜberdacht().equals("yes")) {
-    					goodPath = true;
-    				}
-    				else {
+    			boolean goodWeather = eval.isCurrentWeatherGood();
+    			if(!goodWeather && !(s.getÜberdacht().equals("yes"))) {
     					goodPath = false;
         				break;
     				}
-    			}
-    			goodPath=true;
     		}
     		
     		if(goodPath) {
@@ -114,17 +108,11 @@ public class neo4jAPI {
     	char singleQuotes = '\'';
     	char doubleQuotes = '"';
     	//TODO: make hasWheelChair have several options
-    	int wheelChairEncoding = 0;
     	String wheelChairQuery = "";
-    	switch (wheelChairEncoding) {
-    	case 0: 
+    	if(hasWheelChair)
     		wheelChairQuery = "WHERE  s.rollstuhl = "+doubleQuotes+ "yes" +doubleQuotes;
-    		break;
-    	case 1:
-    		break;
-    	case 2:
-    		break;
-    	}
+    	
+    
     	
     	String query =   
     			"MATCH (start:Station{name: " + singleQuotes + startStation + singleQuotes + "}), (end:Station{name: "+singleQuotes+endStation+singleQuotes+"})"+
@@ -133,7 +121,7 @@ public class neo4jAPI {
     			  "relationshipQuery: "+singleQuotes+ "MATCH (s: Station)-[r:FERNBAHN|SBAHN|UBAHN]-(t: Station) RETURN id(s) as source, id(t) as target, r.fahrzeit as cost"+singleQuotes+","+
     			  "startNode: start,"+
     			  "endNode: end,"+
-    			  "k: 100,"+
+    			  "k: 10,"+
     			  "relationshipWeightProperty: "+singleQuotes+"cost"+singleQuotes+","+
     			  "validateRelationships: false"+
     			"})"+
@@ -146,16 +134,40 @@ public class neo4jAPI {
     	return result;
     }
     
+    private String formatBestPath(Map<String,Object> bestPath){
+    	if(bestPath == null) {
+    		String info = "There was no path found :(";
+    		return info;
+    	}
+    	ArrayList<Station> stationsOnPath = (ArrayList<Station>) bestPath.get("places");
+		String info = "Start Station: " + stationsOnPath.get(0).getName();
+		Double[] costs = (Double[]) bestPath.get("costs");
+		Double totalCost = (Double) bestPath.get("totalCost");
+		for(int i =1; i<stationsOnPath.size();i++) {
+			String builder = "\n     |\n" +
+							"     " + costs[i-1] + "\n" +
+							"     " + stationsOnPath.get(i).getName()+ "\n" +
+							"     v\n";
+			info = info.concat(builder);
+		}
+		
+		String totalCostString ="\nTotal Time Traveled: " + totalCost;
+		info = info.concat(totalCostString);
+		return info;
+		
+    	
+    }
+    
     /**
      * acts as interface to rest of class
      * @param startStation
      * @param endStation
      * @param user
      */
-    public void calculateRoute(String startStation, String endStation, User user) {
+    public String calculateRoute(String startStation, String endStation, User user) {
 		
 		Iterable<Map<String,Object>> bestPaths = buildAndSendCypherQuery(startStation,  endStation, user.hasWheelchair());
-		Map<String,Object> bestPath;
+		Map<String,Object> bestPath= null;
 		try {
 		bestPath = updateWeatherOnBestPaths(bestPaths,user);
 		} catch (NumberFormatException e) {
@@ -165,7 +177,7 @@ public class neo4jAPI {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		 return formatBestPath(bestPath);
 		
 		
 		

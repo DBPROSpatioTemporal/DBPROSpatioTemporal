@@ -61,4 +61,17 @@ public class User {
     public void setHasChildren(boolean hasChildren) {
         this.hasChildren = hasChildren;
     }
+    /**
+     * for debug purposes
+     * @return 
+     */
+    public String toString() {
+    	String s = "User age: " + this.age +"\n"+
+    				"has Luggage: " + this.hasLuggage+"\n"+
+    				"Has Stroller: " + this.hasStroller +"\n"+
+    				"Has Children: " + this.hasChildren +"\n"+
+    				"Has Wheelchair:" + this.hasWheelchair;
+		return s;
+    	
+    }
 }

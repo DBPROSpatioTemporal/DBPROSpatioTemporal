@@ -1,3 +1,4 @@
+package tests;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -16,7 +17,7 @@ public class SessionFactoryTest {
  
     @Test
     public void sendComplexCypher() {
-    	String startStation ="Koeln Hauptbahnhof";
+    	String startStation ="Neukoelln";
     	String endStation = "Ostkreuz";
     	char singleQuotes = '\'';
     	char doubleQuotes = '"';
@@ -50,14 +51,8 @@ public class SessionFactoryTest {
     	while(it.hasNext()) {
     		Map<String, Object> result = it.next();
     		ArrayList<Station> stationsOnPath = (ArrayList<Station>) result.get("places");
-    		Double costs =  (Double) result.get("totalCost");
-    		System.out.println(costs);
-    		
-    		
-    		
-    		
-    		
-    		
+    		Double[] costs = (Double[]) result.get("costs");
+    		System.out.println(costs[0]);
     		
     		
     	}

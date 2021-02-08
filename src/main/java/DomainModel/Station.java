@@ -19,27 +19,27 @@ public class Station {
 		this.id = id;
 	}
 
-	public String getAktuellesWetter() {
+	public long getAktuellesWetter() {
 		return aktuellesWetter;
 	}
 
-	public void setAktuellesWetter(String aktuellesWetter) {
+	public void setAktuellesWetter(long aktuellesWetter) {
 		this.aktuellesWetter = aktuellesWetter;
 	}
 
-	public String getBreitengrad() {
+	public double getBreitengrad() {
 		return breitengrad;
 	}
 
-	public void setBreitengrad(String breitengrad) {
+	public void setBreitengrad(double breitengrad) {
 		this.breitengrad = breitengrad;
 	}
 
-	public String getLaengengrad() {
+	public double getLaengengrad() {
 		return laengengrad;
 	}
 
-	public void setLaengengrad(String laengengrad) {
+	public void setLaengengrad(double laengengrad) {
 		this.laengengrad = laengengrad;
 	}
 
@@ -59,20 +59,20 @@ public class Station {
 		this.rollstuhl = rollstuhl;
 	}
 
-	public String getZukünftigesWetter() {
-		return zukünftigesWetter;
+	public long getZukünftigesWetter() {
+		return zukuenftigesWetter;
 	}
 
-	public void setZukünftigesWetter(String zukünftigesWetter) {
-		this.zukünftigesWetter = zukünftigesWetter;
+	public void setZukünftigesWetter(long zukünftigesWetter) {
+		this.zukuenftigesWetter = zukünftigesWetter;
 	}
 
 	public String getÜberdacht() {
-		return überdacht;
+		return ueberdacht;
 	}
 
 	public void setÜberdacht(String überdacht) {
-		this.überdacht = überdacht;
+		this.ueberdacht = überdacht;
 	}
 
 	public List<Station> getUbahnVerbindungen() {
@@ -99,13 +99,13 @@ public class Station {
 		this.sbahnVerbindungen = sbahnVerbindungen;
 	}
 
-	String aktuellesWetter;
-	String breitengrad;
-	String laengengrad;
+	long aktuellesWetter;
+	double breitengrad;
+	double laengengrad;
 	String name;
 	String rollstuhl;
-	String zukünftigesWetter;
-	String überdacht;
+	long zukuenftigesWetter;
+	String ueberdacht;
 	
 	@Relationship(type="UBAHN", direction=Relationship.UNDIRECTED)
 	private List<Station> ubahnVerbindungen;

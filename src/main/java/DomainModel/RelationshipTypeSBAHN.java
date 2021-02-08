@@ -11,8 +11,8 @@ public class RelationshipTypeSBAHN {
 	@Id @GeneratedValue
 	Long id;
 	
-	String distanz;
-	String fahrzeit;
+	long distanz;
+	long fahrzeit;
 	
 	@StartNode
 	Station startStation;
