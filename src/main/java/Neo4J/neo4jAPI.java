@@ -58,7 +58,7 @@ public class neo4jAPI {
 	 }
     
     /**Either returns the first path in bestPaths for which all stations either have good weather conditions or have a roof
-     * or null
+     * or returns null, indicating no path is suitable
      * 
      * @param bestPaths
      * @param user
@@ -104,7 +104,7 @@ public class neo4jAPI {
      * @param hasWheelChair
      * @return
      */
-    private Iterable<Map<String,Object>> buildAndSendCypherQuery(String startStation, String endStation, boolean hasWheelChair){
+    private Iterable<Map<String,Object>> buildAndSendCypherQuery (String startStation, String endStation, boolean hasWheelChair) {
     	char singleQuotes = '\'';
     	char doubleQuotes = '"';
     	//TODO: make hasWheelChair have several options
@@ -140,14 +140,14 @@ public class neo4jAPI {
     		return info;
     	}
     	ArrayList<Station> stationsOnPath = (ArrayList<Station>) bestPath.get("places");
-		String info = "Start Station: " + stationsOnPath.get(0).getName();
+		String info = stationsOnPath.get(0).getName();
 		Double[] costs = (Double[]) bestPath.get("costs");
 		Double totalCost = (Double) bestPath.get("totalCost");
 		for(int i =1; i<stationsOnPath.size();i++) {
 			String builder = "\n     |\n" +
-							"     " + costs[i-1] + "\n" +
-							"     " + stationsOnPath.get(i).getName()+ "\n" +
-							"     v\n";
+							"   " + costs[i-1] + "\n" +
+							 stationsOnPath.get(i).getName()+ "\n" +
+							"     v";
 			info = info.concat(builder);
 		}
 		
@@ -171,11 +171,15 @@ public class neo4jAPI {
 		try {
 		bestPath = updateWeatherOnBestPaths(bestPaths,user);
 		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
+			String info = "NumberFormat Exception in Weather API. Please try again";
+			return info;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
+			String info = "IO Exception in Weather API. Please try again";
+			return info;
 		}
 		 return formatBestPath(bestPath);
 		

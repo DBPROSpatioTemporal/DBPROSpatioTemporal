@@ -1,4 +1,5 @@
 package tests;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -21,13 +22,10 @@ public class SessionFactoryTest {
     	String endStation = "Ostkreuz";
     	char singleQuotes = '\'';
     	char doubleQuotes = '"';
-    	
-    	int i = 0;
+    	boolean hasWheelChair = true;
     	String wheelChairQuery = "";
-    	switch (i) {
-    	case 0: 
+    	if(hasWheelChair)
     		wheelChairQuery = "WHERE  s.rollstuhl = "+doubleQuotes+ "yes" +doubleQuotes;
-    	}
     	
     	String query =   
     			"MATCH (start:Station{name: " + singleQuotes + startStation + singleQuotes + "}), (end:Station{name: "+singleQuotes+endStation+singleQuotes+"})"+

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.neo4j.driver.exceptions.ClientException;
+
 import OpenWeatherMap.OpenWeatherMap;
 import User.User;
 import net.aksingh.owmjapis.api.APIException;
@@ -84,14 +86,22 @@ public class App {
             			
             			break;
         		}
-        		System.out.println("Created user:\n"+ user.toString());
+        		//System.out.println("Created user:\n"+ user.toString());
         		System.out.println("Start Station: " + startStation +"\nEnd Station: " + endStation);
-        		String result = neo4j.calculateRoute(startStation, endStation, user);
+        		String result ="";
+        		try {
+        		done = false;
+        		result = neo4j.calculateRoute(startStation, endStation, user);
+        		}
+        		catch(ClientException e) {
+        			result = "Start or End Station isnt wheelchair accesible!";
+        		}
         		System.out.println(result);
         	}
         }
         
-      
+       System.out.println("shuting down...");
        scanner.close();
+       return;
     }
 }
