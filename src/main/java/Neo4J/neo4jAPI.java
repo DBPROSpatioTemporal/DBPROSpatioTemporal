@@ -1,5 +1,6 @@
 package Neo4J;
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -73,13 +74,25 @@ public class neo4jAPI {
     	while(it.hasNext()) {
     		Map<String, Object> result = it.next();
     		ArrayList<Station> stationsOnPath = (ArrayList<Station>) result.get("places");
+    		Double[] costs = (Double[]) result.get("costs");
+    		ArrayDeque<Double> queue = new ArrayDeque<Double>();
+    		for(Double cost: costs) {
+    			queue.add(cost);
+    		}
+    		queue.addFirst(0.0);
     		boolean goodPath = true;
+    		double travelTimeSum = 0;
     		for(int i=0; i<stationsOnPath.size();i++){
-    			
+    			travelTimeSum+=queue.pollFirst();
     			Station s = stationsOnPath.get(i);
     			WeatherInfo weatherS = owmAPI.requestWeather(s.getBreitengrad(), s.getLaengengrad()); 
     			UserWeatherEvaluation eval = new UserWeatherEvaluation(user, weatherS);
-    			boolean goodWeather = eval.isCurrentWeatherGood();
+    			int hoursTraveled = (int) (travelTimeSum / 60);
+    			boolean goodWeather = true;
+    			if(hoursTraveled == 0)
+    				 goodWeather = eval.isCurrentWeatherGood();
+    			else
+    				goodWeather = eval.isForecastWeatherGood(hoursTraveled);
     			if(!goodWeather && !(s.getÜberdacht().equals("yes"))) {
     					goodPath = false;
         				break;
