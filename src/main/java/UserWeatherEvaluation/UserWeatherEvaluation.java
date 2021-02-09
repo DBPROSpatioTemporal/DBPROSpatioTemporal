@@ -30,15 +30,20 @@ public class UserWeatherEvaluation {
      * @return true if weather is good and false otherwise.
      */
     public boolean isCurrentWeatherGood() {
+        boolean isWeatherGood;
+        boolean isStrollerWeatherGood = true;
         // get current Weather of weatherInfo.class
         CurrentWeather currentWeather = weatherInfo.getCurrent();
         // Get The age Group Type
         AgeGroupType ageGroupType = getAgeGroupType(user.getAge());
         // Check if Weather is good for that Age Group Type
-        boolean isWeatherGood = isWeatherGood(currentWeather, ageGroupType);
+        isWeatherGood = isWeatherGood(currentWeather, ageGroupType);
+        // Check if Stroller Weather is good
+        if (user.hasStroller()) { isStrollerWeatherGood = isStrollerWeatherGood(currentWeather);}
+
 
         // All of the Options have to be good for the Current Weather to be good;
-        return (isWeatherGood);
+        return (isWeatherGood && isStrollerWeatherGood);
     }
 
     /**
@@ -48,15 +53,19 @@ public class UserWeatherEvaluation {
      * @return true if weather is good and false otherwise.
      */
     public boolean isForecastWeatherGood(int forecastHour) {
+        boolean isWeatherGood;
+        boolean isStrollerWeatherGood = true;
         // get hourly Weather Forecast by index
         HourlyWeather hourlyWeather = weatherInfo.getHourly(forecastHour);
         // Get The age Group Type
         AgeGroupType ageGroupType = getAgeGroupType(user.getAge());
         // Check if Weather is good for that Age Group Type
-        boolean isWeatherGood = isWeatherGood(hourlyWeather, ageGroupType);
+        isWeatherGood = isWeatherGood(hourlyWeather, ageGroupType);
+        // Check if Stroller Weather is good
+        if (user.hasStroller()) { isStrollerWeatherGood = isStrollerWeatherGood(hourlyWeather);}
 
         // All of the Options have to be good for the Current Weather to be good;
-        return (isWeatherGood);
+        return (isWeatherGood && isStrollerWeatherGood);
     }
 
     /**
@@ -74,28 +83,34 @@ public class UserWeatherEvaluation {
         } else if (isBetween(age, 0, 14)) { // Age Group 0-14: Children
 
             System.out.println("Age Group: Children");
-            // Temperature appropriate for Children is between 0 and 30 degrees
             return new ChildrenWeatherEvaluation();
 
         } else if (isBetween(age, 15, 24)) { // Age Group 15-24: Youth
 
             System.out.println("Age Group: Youth");
-            // Temperature appropriate for Youth is between -10 and 40 degrees
             return new YouthWeatherEvaluation();
 
         } else if (isBetween(age, 25, 64)) { // Age Group 25-64: Adults
 
             System.out.println("Age Group: Adults");
-            // Temperature appropriate for Adults is between -10 and 40 degrees
             return new AdultWeatherEvaluation();
 
         } else {
 
             System.out.println("Age Group: Seniors"); // Age Group >= 65: Seniors
-            // Temperature appropriate for Adults is between -10 and 40 degrees
             return new SeniorWeatherEvaluation();
 
         }
+    }
+
+    /**
+     * Test if the Weather Conditions are good are people with a stroller.
+     * Since the person in the stroller is a child, the age group that needs to be used is Children
+     * @param weather CurrentWeather or HourlyWeather
+     * @return true if the weather is good for the child in the stroller
+     */
+    private boolean isStrollerWeatherGood(WeatherTime weather) {
+        return isWeatherGood(weather, new ChildrenWeatherEvaluation());
     }
 
     /**

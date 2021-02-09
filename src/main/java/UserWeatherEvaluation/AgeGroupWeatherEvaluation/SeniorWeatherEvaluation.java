@@ -7,15 +7,17 @@ public class SeniorWeatherEvaluation extends AgeGroupType{
     private int maxAge = 100;
 
 
+
     @Override
     public boolean isAgeTempGood(WeatherTime weather) {
-        return isBetween(weather.getFeels_like(), 0, 30);
+        return isBetween(weather.getTemp(), -5, 40);
     }
 
     @Override
     public boolean isAgeWindSpeedGood(WeatherTime weather) {
         return true;
     }
+
 
     @Override
     protected boolean isThunderstormWeatherGood(int WeatherID) {

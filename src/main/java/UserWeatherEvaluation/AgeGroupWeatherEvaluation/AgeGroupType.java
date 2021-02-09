@@ -19,6 +19,12 @@ public abstract class AgeGroupType {
 
     public abstract boolean isAgeWindSpeedGood(WeatherTime weather);
 
+    /**
+     * Checks if the Weather is good for that age group under specific Weather conditions
+     * All weather conditions: https://openweathermap.org/weather-conditions
+     * @param weather currentWeather or HourlyWeather
+     * @return true if Weather is good for Age Group
+     */
     public boolean isAgeWeatherGood(WeatherTime weather) {
         int weatherID = weather.getWeather().get(0).getId();
         return switch (weather.getWeather().get(0).getMain()) {

@@ -26,7 +26,7 @@ public class UserWeatherEvaluationTest {
         WeatherInfo weather = new OpenWeatherMap().requestWeather(52.503056, 13.468889);
         UserWeatherEvaluation uwe = new UserWeatherEvaluation(user, weather);
 
-        System.out.println(uwe.isForecastWeatherGood(1));
+        System.out.println("Is 1 Hour Forecast good: " + uwe.isForecastWeatherGood(1));
 
     }
 
@@ -36,7 +36,7 @@ public class UserWeatherEvaluationTest {
         WeatherInfo weather = new OpenWeatherMap().requestWeather(52.503056, 13.468889);
         UserWeatherEvaluation uwe = new UserWeatherEvaluation(user, weather);
 
-        System.out.println(uwe.isForecastWeatherGood(1));
+        System.out.println("Is 1 Hour Forecast good: " + uwe.isForecastWeatherGood(1));
 
     }
 

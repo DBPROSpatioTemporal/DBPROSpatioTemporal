@@ -13,7 +13,7 @@ public class ChildrenWeatherEvaluation extends AgeGroupType{
 
     @Override
     public boolean isAgeTempGood(WeatherTime weather) {
-        return 0<= weather.getFeels_like() && weather.getFeels_like() <= 30;
+        return isBetween(weather.getTemp(), -5, 35);
     }
 
     @Override

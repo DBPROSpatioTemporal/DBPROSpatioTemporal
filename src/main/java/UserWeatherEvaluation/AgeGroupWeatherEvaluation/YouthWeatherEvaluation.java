@@ -8,7 +8,7 @@ public class YouthWeatherEvaluation extends AgeGroupType {
 
     @Override
     public boolean isAgeTempGood(WeatherTime weather) {
-        return isBetween(weather.getFeels_like(), -10, 40);
+        return isBetween(weather.getTemp(), -15, 40);
     }
 
     @Override
@@ -23,17 +23,17 @@ public class YouthWeatherEvaluation extends AgeGroupType {
 
     @Override
     protected boolean isDrizzleWeatherGood(int WeatherID) {
-        return !isBetween(WeatherID, 310, 321);
+        return true;
     }
 
     @Override
     protected boolean isRainWeatherGood(int WeatherID) {
-        return !isBetween(WeatherID, 502, 531);
+        return !isBetween(WeatherID, 504, 511);
     }
 
     @Override
     protected boolean isSnowWeatherGood(int WeatherID) {
-        return !isBetween(WeatherID, 602, 622);
+        return !(WeatherID == 602 || WeatherID == 622);
     }
 
     @Override
