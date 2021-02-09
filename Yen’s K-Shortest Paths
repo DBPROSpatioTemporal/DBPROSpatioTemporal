@@ -1,7 +1,7 @@
-MATCH (start:Station{name: 'Köln Hauptbahnhof'}), (end:Station{name: 'Ostkreuz'})
+MATCH (start:Station{name: " + startStation + "}), (end:Station{name: " + endStation + "})
 CALL gds.alpha.kShortestPaths.stream({
-  nodeQuery: 'MATCH (s:Station) WHERE  s.rollstuhl = "yes" RETURN id(s) as id',
-  relationshipQuery: 'MATCH (s: Station)-[r:FERNBAHN|SBAHN|UBAHN]-(t: Station) RETURN id(s) as source, id(t) as target, r.fahrzeit as cost',
+  nodeQuery: 'MATCH (s:Station) " + filter + " RETURN id(s) as id',
+  relationshipQuery: 'MATCH (s: Station)-[r:" + verbindung + "]-(t: Station) RETURN id(s) as source, id(t) as target, r.fahrzeit as cost',
   startNode: start,
   endNode: end,
   k: 100,
@@ -12,3 +12,22 @@ YIELD index, nodeIds, costs
 RETURN [node IN gds.util.asNodes(nodeIds) | node] AS places,
        costs,
        reduce(acc = 0.0, cost IN costs | acc + cost) AS totalCost
+
+
+startStation = 'Koeln Hauptbahnhof'
+endStation = 'Ostkreuz'
+
+rollstuhl entweder "yes" oder "limited"             -> wheelchairYL = NOT s.rollstuhl = "no" 
+rollstuhl nur "yes"                                 -> wheelchairY = s.rollstuhl = "yes" 
+rollstuhl sowohl "yes" und "limited", als auch "no" ->
+
+überdacht entweder "yes" oder "limited"             -> coveredYL = NOT s.ueberdacht = "no" 
+überdacht nur "yes"                                 -> coveredY = s.ueberdacht = "yes" 
+überdacht sowohl "yes" und "limited", als auch "no" ->
+
+verbindung = FERNBAHN oder FERNBAHN|SBAHN|UBAHN oder SBAHN o.ä.
+
+WHERE und AND kann auch weggelassen werden
+
+Beispiel:
+filter = WHERE NOT s.rollstuhl = "no" AND s.ueberdacht = "yes"
