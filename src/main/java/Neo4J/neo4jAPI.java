@@ -59,7 +59,8 @@ public class neo4jAPI {
 	 }
     
     /**Either returns the first path in bestPaths for which all stations either have good weather conditions or have a roof
-     * or returns null, indicating no path is suitable
+     * or returns null, indicating no path is suitable.
+     * Uses sum of travel time to determine if current Weather (travel time under 1h) or forecast weather (travel time over 1 h) is relevant
      * 
      * @param bestPaths
      * @param user
@@ -68,20 +69,40 @@ public class neo4jAPI {
      * @throws IOException
      */
     private Map<String,Object> updateWeatherOnBestPaths(Iterable<Map<String,Object>> bestPaths, User user) throws NumberFormatException, IOException{
-    	
+    	/*The structure of the Map<String,Object> is as follows:
+    	 * key: places          value: ArrayList<Station>
+    	 * ArrayList represents the stations used in order
+    	 * 
+    	 * key: costs			value: Double[] 
+    	 * Example: value[0] represents travel time from first station to second station
+    	 *
+    	 * key: totalCost       value: Double
+    	 * value equals the sum of costs
+    	 * 
+    	 * Each entry in the Map represents a path made up of all stations, costs as travel time from one station to the next and a sum of total travel time
+    	 */
     	Iterator<Map<String, Object>> it = bestPaths.iterator();
     	Map<String,Object> bestPath= null;
+    	
     	while(it.hasNext()) {
     		Map<String, Object> result = it.next();
     		ArrayList<Station> stationsOnPath = (ArrayList<Station>) result.get("places");
     		Double[] costs = (Double[]) result.get("costs");
+    		//size miss match between stations and costs. 
+    		//To overcome this and make it easier to use in same for loop we create a Container with a zero as a first entry
     		ArrayDeque<Double> queue = new ArrayDeque<Double>();
     		for(Double cost: costs) {
     			queue.add(cost);
     		}
     		queue.addFirst(0.0);
     		boolean goodPath = true;
+    		//sum is used to determine if Forecast weather or current weather should be used
     		double travelTimeSum = 0;
+    		/*		Iterates through each station on a path
+    		 * 		Generates a WeatherInfo Object based on geocoordinates of a station and a User Object
+    		 * 		This WeatherInfo Object is used to create a UserWeatherEvaluation Object eval
+    		 * 		eval holds the logic for determining for a given User if weather is good or not 		
+    		 */
     		for(int i=0; i<stationsOnPath.size();i++){
     			travelTimeSum+=queue.pollFirst();
     			Station s = stationsOnPath.get(i);
