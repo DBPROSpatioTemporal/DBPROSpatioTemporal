@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import org.neo4j.driver.exceptions.ClientException;
 
+import ConnectionTypes.Connections;
 import OpenWeatherMap.OpenWeatherMap;
 import User.User;
 import net.aksingh.owmjapis.api.APIException;
@@ -22,7 +23,9 @@ public class App {
         String startStation = null;
     	String endStation = null;
     	int passengerT;
-    	boolean done = false;
+    	int conT;
+    	boolean doneP = false;
+    	boolean doneT = false;
 
     	Map<Integer, String> stations = neo4j.getStations();
     	Map<Integer,String> passengerType = new HashMap<>();
@@ -32,6 +35,13 @@ public class App {
     	passengerType.put(4, "Family with small kids");
     	passengerType.put(5, "no restriction");
     	passengerType.put(6, "DONE");
+    	
+    	Map<Integer,String> connectionTypes = new HashMap<>();
+    	connectionTypes.put(1, "SBAHN");
+    	connectionTypes.put(2, "UBAHN");
+    	connectionTypes.put(3, "FERNBAHN");
+    	connectionTypes.put(4, "DONE");
+    	
     	
     	Scanner scanner = new Scanner(System.in);
     	while(true) {
@@ -45,6 +55,7 @@ public class App {
         	//where work is actually done
         	if(s.equals("route")) {
         		User user = new User();
+        		Connections con = new Connections();
         		System.out.println("Please enter your age");
         		int age = scanner.nextInt();
         		user.setAge(age);
@@ -79,19 +90,42 @@ public class App {
             			user.setHasWheelchair(false);
             			break;
             		case 6:
-            			done = true;
+            			doneP = true;
             			break;
             		}
-            		if(done)
+            		if(doneP)
             			
             			break;
         		}
-        		//System.out.println("Created user:\n"+ user.toString());
+        		while (true) {
+        			System.out.println("Please select all connections you wish to use. When done select DONE:");
+        			connectionTypes.forEach((k,v)->System.out.println("Selection: " + k +"-------- " + v));
+            		System.out.println("Please enter Selection");
+            		conT = scanner.nextInt();
+            		switch(conT) {
+            		case 1:
+            			con.setSBAHN(true);
+            			break;
+            		case 2:
+            			con.setUBAHN(true);
+            			break;
+            		case 3:
+            			con.setFERNBAHN(true);
+            			break;
+            		case 4:
+            			doneT = true;
+            			break;
+            		}
+            		if(doneT)
+            			break;
+        		}
+        		
         		System.out.println("Start Station: " + startStation +"\nEnd Station: " + endStation);
         		String result ="";
         		try {
-        		done = false;
-        		result = neo4j.calculateRoute(startStation, endStation, user);
+        		doneP = false;
+        		doneT = false;
+        		result = neo4j.calculateRoute(startStation, endStation, user, con);
         		}
         		catch(ClientException e) {
         			result = "Start or End Station isnt wheelchair accesible!";

@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import org.neo4j.ogm.session.Session;
 
+import ConnectionTypes.Connections;
 import DomainModel.Station;
 import OpenWeatherMap.OpenWeatherMap;
 import OpenWeatherMap.WeatherInfo.WeatherInfo;
@@ -138,21 +139,59 @@ public class neo4jAPI {
      * @param hasWheelChair
      * @return
      */
-    private Iterable<Map<String,Object>> buildAndSendCypherQuery (String startStation, String endStation, boolean hasWheelChair) {
+    private Iterable<Map<String,Object>> buildAndSendCypherQuery (String startStation, String endStation, User user,Connections con) {
     	char singleQuotes = '\'';
     	char doubleQuotes = '"';
-    	//TODO: make hasWheelChair have several options
-    	String wheelChairQuery = "";
-    	if(hasWheelChair)
-    		wheelChairQuery = "WHERE  s.rollstuhl = "+doubleQuotes+ "yes" +doubleQuotes;
+    	String wheelchairConditions = "";
+    	String coveredConditions="";
+    	/*
+    	 * Depending on properties of the User, the User will have different needs regarding station attributes
+    	 * The mapping of User attributes to necessary station attributes can be found as a table our final paper.
+    	 * The if-clauses are ordered form least restrictive to most restrictive and build on each other
+    	 * 
+    	 * As a senior you have the tightest restrictions regarding the covered attribute of a station (MUST be entirely covered)
+    	 * As a wheel chair User the station must be entirely wheel chair accessible ("s.rollstuhl="yes")
+    	 */
+    	if(user.hasLuggage()) {
+    		coveredConditions= " NOT s.ueberdacht = "+ doubleQuotes +"no " +doubleQuotes;
+    	}
+    	if(user.hasStroller()) {
+    		wheelchairConditions = " NOT s.rollstuhl = "+doubleQuotes+ "no" +doubleQuotes;
+    		coveredConditions    = " NOT s.ueberdacht = "+ doubleQuotes +"no" +doubleQuotes;
+    	}
     	
+    	if(user.getAge()>64) {
+    		coveredConditions =" s.ueberdacht = "+ doubleQuotes +"yes " +doubleQuotes;
+    		
+    	}
+    	
+    	if(user.hasWheelchair()) {
+    		wheelchairConditions= " s.rollstuhl = "+doubleQuotes+ "yes " +doubleQuotes;
+    	}
+    	
+    	String stationConditions = "";
+    	if(!wheelchairConditions.isBlank() && !coveredConditions.isBlank()) {
+    		stationConditions+=" WHERE" +wheelchairConditions+ " AND" +coveredConditions;
+    	}
+    	if(!wheelchairConditions.isBlank() && coveredConditions.isBlank()) {
+    		stationConditions+=" WHERE" +wheelchairConditions;
+    	}
+    	if(wheelchairConditions.isBlank() && !coveredConditions.isBlank()) {
+    		stationConditions+=" WHERE" +coveredConditions;
+    	}
+    	
+    		
+    	
+    	/*Depending on input from User on what connections he/she wants to use, an appropriate connectionConditions String is built
+    	 */
+    	String connectionConditions = con.generateConnectionConditions();
     
     	
     	String query =   
     			"MATCH (start:Station{name: " + singleQuotes + startStation + singleQuotes + "}), (end:Station{name: "+singleQuotes+endStation+singleQuotes+"})"+
     			"CALL gds.alpha.kShortestPaths.stream({" +
-    			  "nodeQuery: "+singleQuotes+ "MATCH (s:Station) "+ wheelChairQuery+" RETURN id(s) as id"+singleQuotes+","+
-    			  "relationshipQuery: "+singleQuotes+ "MATCH (s: Station)-[r:FERNBAHN|SBAHN|UBAHN]-(t: Station) RETURN id(s) as source, id(t) as target, r.fahrzeit as cost"+singleQuotes+","+
+    			  "nodeQuery: "+singleQuotes+ "MATCH (s:Station) "+ stationConditions+" RETURN id(s) as id"+singleQuotes+","+
+    			  "relationshipQuery: "+singleQuotes+ "MATCH (s: Station)-[r:"+ connectionConditions +"]-(t: Station) RETURN id(s) as source, id(t) as target, r.fahrzeit as cost"+singleQuotes+","+
     			  "startNode: start,"+
     			  "endNode: end,"+
     			  "k: 10,"+
@@ -197,10 +236,11 @@ public class neo4jAPI {
      * @param startStation
      * @param endStation
      * @param user
+     * @param con 
      */
-    public String calculateRoute(String startStation, String endStation, User user) {
+    public String calculateRoute(String startStation, String endStation, User user, Connections con) {
 		
-		Iterable<Map<String,Object>> bestPaths = buildAndSendCypherQuery(startStation,  endStation, user.hasWheelchair());
+		Iterable<Map<String,Object>> bestPaths = buildAndSendCypherQuery(startStation,  endStation, user, con);
 		Map<String,Object> bestPath= null;
 		try {
 		bestPath = updateWeatherOnBestPaths(bestPaths,user);
