@@ -1,5 +1,11 @@
 package User;
 
+/**
+ * This class is made for the user that uses the Application.
+ * It stores all the necessary information from the user for the program
+ * to be able to make a good Weather Evaluation at a specific station
+ * and also take into consideration if the user uses a wheelchair
+ */
 public class User {
     private int age;
     private boolean hasLuggage;
@@ -22,6 +28,10 @@ public class User {
      */
     public User() { }
 
+
+    /**
+     * SETTERS AND GETTERS
+     */
     public void setAge(int age) {
         this.age = age;
     }

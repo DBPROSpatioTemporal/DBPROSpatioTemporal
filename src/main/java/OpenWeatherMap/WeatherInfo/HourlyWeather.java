@@ -10,6 +10,10 @@ public class HourlyWeather extends WeatherTime {
 
     }
 
+    /**
+     * toString method
+     * @return String with all field variables
+     */
     @Override
     public String toString() {
         return "HourlyWeather{" +
@@ -28,6 +32,10 @@ public class HourlyWeather extends WeatherTime {
                 ", pop=" + pop +
                 '}';
     }
+
+    /**
+     * SETTERS AND GETTERS
+     */
 
     public double getPop() {
         return pop;

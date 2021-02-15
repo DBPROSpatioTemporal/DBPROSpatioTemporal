@@ -7,7 +7,6 @@ import java.util.Scanner;
 import org.neo4j.driver.exceptions.ClientException;
 
 import ConnectionTypes.Connections;
-import OpenWeatherMap.OpenWeatherMap;
 import User.User;
 import net.aksingh.owmjapis.api.APIException;
 import Neo4J.neo4jAPI;

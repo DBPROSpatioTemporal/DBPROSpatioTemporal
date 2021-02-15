@@ -6,10 +6,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.neo4j.ogm.session.Session;
 
@@ -136,7 +134,8 @@ public class neo4jAPI {
      * Returns a data structure filled with Map<String,Object>. Each map represents a path from start to end station and contains cost information (cummulative travel time)
      * @param startStation
      * @param endStation
-     * @param hasWheelChair
+     * @param user
+	 * @param con
      * @return
      */
     private Iterable<Map<String,Object>> buildAndSendCypherQuery (String startStation, String endStation, User user,Connections con) {

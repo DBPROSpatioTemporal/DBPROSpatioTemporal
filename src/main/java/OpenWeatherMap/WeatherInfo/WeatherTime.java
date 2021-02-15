@@ -23,6 +23,10 @@ public class WeatherTime {
 
     }
 
+    /**
+     * toString method
+     * @return String with all field variables
+     */
     @Override
     public String toString() {
         return "WeatherTime{" +
@@ -40,6 +44,10 @@ public class WeatherTime {
                 ", weather=" + weather +
                 '}';
     }
+
+    /**
+     * SETTERS AND GETTERS
+     */
 
     public int getDt() {
         return dt;

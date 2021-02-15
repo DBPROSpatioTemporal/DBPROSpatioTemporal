@@ -32,6 +32,7 @@ public class UserWeatherEvaluation {
     public boolean isCurrentWeatherGood() {
         boolean isWeatherGood;
         boolean isStrollerWeatherGood = true;
+        boolean isChildrenWeatherGood = true;
         // get current Weather of weatherInfo.class
         CurrentWeather currentWeather = weatherInfo.getCurrent();
         // Get The age Group Type
@@ -40,10 +41,11 @@ public class UserWeatherEvaluation {
         isWeatherGood = isWeatherGood(currentWeather, ageGroupType);
         // Check if Stroller Weather is good
         if (user.hasStroller()) { isStrollerWeatherGood = isStrollerWeatherGood(currentWeather);}
-
+        // Check if Children Weather is good (when user has Children with him)
+        if (user.hasChildren()) { isChildrenWeatherGood = isChildrenWeatherGood(currentWeather);}
 
         // All of the Options have to be good for the Current Weather to be good;
-        return (isWeatherGood && isStrollerWeatherGood);
+        return (isWeatherGood && isStrollerWeatherGood && isChildrenWeatherGood);
     }
 
     /**
@@ -55,6 +57,7 @@ public class UserWeatherEvaluation {
     public boolean isForecastWeatherGood(int forecastHour) {
         boolean isWeatherGood;
         boolean isStrollerWeatherGood = true;
+        boolean isChildrenWeatherGood = true;
         // get hourly Weather Forecast by index
         HourlyWeather hourlyWeather = weatherInfo.getHourly(forecastHour);
         // Get The age Group Type
@@ -63,9 +66,11 @@ public class UserWeatherEvaluation {
         isWeatherGood = isWeatherGood(hourlyWeather, ageGroupType);
         // Check if Stroller Weather is good
         if (user.hasStroller()) { isStrollerWeatherGood = isStrollerWeatherGood(hourlyWeather);}
+        // Check if Children Weather is good (when user has Children with him)
+        if (user.hasChildren()) { isChildrenWeatherGood = isChildrenWeatherGood(hourlyWeather);}
 
         // All of the Options have to be good for the Current Weather to be good;
-        return (isWeatherGood && isStrollerWeatherGood);
+        return (isWeatherGood && isStrollerWeatherGood && isChildrenWeatherGood);
     }
 
     /**
@@ -114,6 +119,15 @@ public class UserWeatherEvaluation {
     }
 
     /**
+     * Test if the Weather Conditions are good are people with a Children.
+     * @param weather CurrentWeather or HourlyWeather
+     * @return true if the weather is good for the child that is with the user
+     */
+    private boolean isChildrenWeatherGood(WeatherTime weather) {
+        return isWeatherGood(weather, new ChildrenWeatherEvaluation());
+    }
+
+    /**
      * Test if the Weather Conditions (Temperature, Weather, Wind Speed) is good for a given Age Group
      * (Children, Youth, Adult, Senior)
      * returns true if the all the conditions are good.
@@ -127,19 +141,21 @@ public class UserWeatherEvaluation {
         // Is Weather good for the User age
         boolean isAgeWeatherGood = ageGroupType.isAgeWeatherGood(weather);
         // Is Wind speed fine for the User age
-        boolean isWindSpeedGood = ageGroupType.isAgeWindSpeedGood(weather); // TODO: to implement returns always true
+        boolean isWindSpeedGood = ageGroupType.isAgeWindSpeedGood(weather);
 
         // All of the Options have to be good for the Current Weather to be good;
         return (isAgeTempGood && isAgeWeatherGood && isWindSpeedGood);
     }
 
-
+    /**
+     * Helper function that returns true if x is between lower and upper bound
+     * @param x     Number to test
+     * @param lower bound
+     * @param upper bound
+     * @return      true if x is between lower and upper
+     */
     private boolean isBetween(double x, double lower, double upper) {
         return lower <= x && x <= upper;
     }
 
-    // just a test function
-    public boolean isOldEnough() {
-        return user.getAge() > 50;
-    }
 }

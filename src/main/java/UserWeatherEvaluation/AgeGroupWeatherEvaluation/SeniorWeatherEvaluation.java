@@ -2,6 +2,10 @@ package UserWeatherEvaluation.AgeGroupWeatherEvaluation;
 
 import OpenWeatherMap.WeatherInfo.WeatherTime;
 
+/**
+ * Weather Evaluation form the Age group Senior (Age: >= 65)
+ * Extends the abstract class AgeGroupType
+ */
 public class SeniorWeatherEvaluation extends AgeGroupType{
     private int minAge = 65;
     private int maxAge = 100;
@@ -15,7 +19,7 @@ public class SeniorWeatherEvaluation extends AgeGroupType{
 
     @Override
     public boolean isAgeWindSpeedGood(WeatherTime weather) {
-        return true;
+        return (weather.getWind_speed() < 14);
     }
 
 

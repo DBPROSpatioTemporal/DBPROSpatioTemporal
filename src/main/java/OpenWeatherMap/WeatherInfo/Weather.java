@@ -13,6 +13,10 @@ public class Weather {
     public Weather(){
     }
 
+    /**
+     * toString method
+     * @return String with all field variables
+     */
     @Override
     public String toString() {
         return "Weather{" +
@@ -22,6 +26,10 @@ public class Weather {
                 ", icon='" + icon + '\'' +
                 '}';
     }
+
+    /**
+     * SETTERS AND GETTERS
+     */
 
     public int getId() {
         return id;

@@ -11,6 +11,10 @@ public class CurrentWeather extends WeatherTime {
 
     }
 
+    /**
+     * toString method
+     * @return String with all field variables
+     */
     @Override
     public String toString() {
         return "CurrentWeather{" +
@@ -31,6 +35,9 @@ public class CurrentWeather extends WeatherTime {
                 '}';
     }
 
+    /**
+     * SETTERS AND GETTERS
+     */
     public int getSunrise() {
         return sunrise;
     }

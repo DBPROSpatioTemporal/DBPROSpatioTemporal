@@ -15,7 +15,13 @@ public abstract class AgeGroupType {
         return isBetween(age, minAge, maxAge);
     }
 
+    /**
+     * Checks if the Temperature for the Age Group Type is good
+     * @param weather   Weather that contains Temperature information
+     * @return true if Temperature for age group is good
+     */
     public abstract boolean isAgeTempGood(WeatherTime weather);
+
 
     public abstract boolean isAgeWindSpeedGood(WeatherTime weather);
 
@@ -39,20 +45,69 @@ public abstract class AgeGroupType {
         };
     }
 
+    /**
+     * Checks if the Thunderstorm conditions for the Age Group Type is good
+     * It checks by testing the WeatherID https://openweathermap.org/weather-conditions
+     * @param WeatherID of the Weather that OpenWeatherMaps gives
+     * @return true if Weather Condition is good for Age Group
+     */
     protected abstract boolean isThunderstormWeatherGood(int WeatherID);
 
+    /**
+     * Checks if the Drizzle conditions for the Age Group Type is good
+     * It checks by testing the WeatherID https://openweathermap.org/weather-conditions
+     * @param WeatherID of the Weather that OpenWeatherMaps gives
+     * @return true if Weather Condition is good for Age Group
+     */
     protected abstract boolean isDrizzleWeatherGood(int WeatherID);
 
+    /**
+     * Checks if the Rain conditions for the Age Group Type is good
+     * It checks by testing the WeatherID https://openweathermap.org/weather-conditions
+     * @param WeatherID of the Weather that OpenWeatherMaps gives
+     * @return true if Weather Condition is good for Age Group
+     */
     protected abstract boolean isRainWeatherGood(int WeatherID);
 
+    /**
+     * Checks if the Snow conditions for the Age Group Type is good
+     * It checks by testing the WeatherID https://openweathermap.org/weather-conditions
+     * @param WeatherID of the Weather that OpenWeatherMaps gives
+     * @return true if Weather Condition is good for Age Group
+     */
     protected abstract boolean isSnowWeatherGood(int WeatherID);
 
+    /**
+     * Checks if the Atmosphere conditions for the Age Group Type is good
+     * It checks by testing the WeatherID https://openweathermap.org/weather-conditions
+     * @param WeatherID of the Weather that OpenWeatherMaps gives
+     * @return true if Weather Condition is good for Age Group
+     */
     protected abstract boolean isAtmosphereWeatherGood(int WeatherID);
 
+    /**
+     * Checks if the Clear Weather conditions for the Age Group Type is good
+     * It checks by testing the WeatherID https://openweathermap.org/weather-conditions
+     * @param WeatherID of the Weather that OpenWeatherMaps gives
+     * @return true if Weather Condition is good for Age Group
+     */
     protected abstract boolean isClearWeatherGood(int WeatherID);
 
+    /**
+     * Checks if the Cloud conditions for the Age Group Type is good
+     * It checks by testing the WeatherID https://openweathermap.org/weather-conditions
+     * @param WeatherID of the Weather that OpenWeatherMaps gives
+     * @return true if Weather Condition is good for Age Group
+     */
     protected abstract boolean isCloudsWeatherGood(int WeatherID);
 
+    /**
+     * Helper function that returns true if x is between lower and upper bound
+     * @param x     Number to test
+     * @param lower bound
+     * @param upper bound
+     * @return      true if x is between lower and upper
+     */
     public boolean isBetween(double x, double lower, double upper) {
         return lower <= x && x <= upper;
     }

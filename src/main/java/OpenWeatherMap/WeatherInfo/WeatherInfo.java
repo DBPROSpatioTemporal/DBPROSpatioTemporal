@@ -24,6 +24,10 @@ public class WeatherInfo {
 
     }
 
+    /**
+     * toString method
+     * @return String with all field variables
+     */
     @Override
     public String toString() {
         return "WeatherInfo{" +
@@ -35,6 +39,10 @@ public class WeatherInfo {
                 ", hourly=" + hourly +
                 '}';
     }
+
+    /**
+     * SETTERS AND GETTERS
+     */
 
     public double getLat() {
         return lat;
