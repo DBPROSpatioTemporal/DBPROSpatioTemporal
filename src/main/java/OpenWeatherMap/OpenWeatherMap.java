@@ -74,7 +74,7 @@ public class OpenWeatherMap {
             e.printStackTrace();
         }
 
-        System.out.println(response.body());
+        //System.out.println(response.body());
         // parse the Json response into Java Objects and return a WeatherInfo class with ALL Weather Information
         return jsonParser.JsonToWeatherInfo(response.body());
     }

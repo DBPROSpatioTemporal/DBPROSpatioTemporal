@@ -153,7 +153,7 @@ public class neo4jAPI {
     	 * As a wheel chair User the station must be entirely wheel chair accessible ("s.rollstuhl="yes")
     	 */
     	if(user.hasLuggage()) {
-    		coveredConditions= " NOT s.ueberdacht = "+ doubleQuotes +"no " +doubleQuotes;
+    		coveredConditions= " NOT s.ueberdacht = "+ doubleQuotes +"no" +doubleQuotes;
     	}
     	if(user.hasStroller()) {
     		wheelchairConditions = " NOT s.rollstuhl = "+doubleQuotes+ "no" +doubleQuotes;
@@ -161,12 +161,12 @@ public class neo4jAPI {
     	}
     	
     	if(user.getAge()>64) {
-    		coveredConditions =" s.ueberdacht = "+ doubleQuotes +"yes " +doubleQuotes;
+    		coveredConditions =" s.ueberdacht = "+ doubleQuotes +"yes" +doubleQuotes;
     		
     	}
     	
     	if(user.hasWheelchair()) {
-    		wheelchairConditions= " s.rollstuhl = "+doubleQuotes+ "yes " +doubleQuotes;
+    		wheelchairConditions= " s.rollstuhl = "+doubleQuotes+ "yes" +doubleQuotes;
     	}
     	
     	String stationConditions = "";

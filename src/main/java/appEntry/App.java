@@ -129,6 +129,7 @@ public class App {
         		}
         		catch(ClientException e) {
         			result = "Start or End Station isnt wheelchair accesible!";
+        			System.out.println(e);
         		}
         		System.out.println(result);
         	}

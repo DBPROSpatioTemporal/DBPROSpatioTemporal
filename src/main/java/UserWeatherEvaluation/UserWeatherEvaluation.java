@@ -82,22 +82,22 @@ public class UserWeatherEvaluation {
 
         } else if (isBetween(age, 0, 14)) { // Age Group 0-14: Children
 
-            System.out.println("Age Group: Children");
+            //System.out.println("Age Group: Children");
             return new ChildrenWeatherEvaluation();
 
         } else if (isBetween(age, 15, 24)) { // Age Group 15-24: Youth
 
-            System.out.println("Age Group: Youth");
+            //System.out.println("Age Group: Youth");
             return new YouthWeatherEvaluation();
 
         } else if (isBetween(age, 25, 64)) { // Age Group 25-64: Adults
 
-            System.out.println("Age Group: Adults");
+            //System.out.println("Age Group: Adults");
             return new AdultWeatherEvaluation();
 
         } else {
 
-            System.out.println("Age Group: Seniors"); // Age Group >= 65: Seniors
+            //System.out.println("Age Group: Seniors"); // Age Group >= 65: Seniors
             return new SeniorWeatherEvaluation();
 
         }
